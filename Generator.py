@@ -3,14 +3,14 @@ import numpy as np
 import random
 
 IMAGE_SIZE = 1000
-PIECES = 6
+PIECES = 5
 COLORS = [(0, 0, 255), (0, 255, 0), (255, 0, 0),
           (255, 255, 0), (255, 255, 0), (255, 0, 255), (255, 255, 255)]
 SHAPES = ["C"]
 MIN_SIZE = 50
 MAX_SIZE = 250
-THRESHOLD1 = 10
-THRESHOLD2 = 1000
+NUMBER_OF_RANDOM_SHAPES = 5
+
 
 grid = np.ones((IMAGE_SIZE, IMAGE_SIZE, 3), dtype=np.uint8)
 for i in range(1, PIECES):
@@ -20,7 +20,16 @@ for i in range(1, PIECES):
             (IMAGE_SIZE, i * IMAGE_SIZE // PIECES), (255, 255, 255), 1)
 
 image = np.ones((IMAGE_SIZE, IMAGE_SIZE, 3), dtype=np.uint8)
-for i in range(10):
+
+tile_size = IMAGE_SIZE / PIECES
+for i in range(0, tile_size, IMAGE_SIZE + 1):
+    for j in range(0, tile_size, IMAGE_SIZE + 1):
+        color = COLORS[random.randrange(0, len(COLORS))]
+        shape = SHAPES[random.randrange(0, len(SHAPES))]
+        size = random.randint(MIN_SIZE, MAX_SIZE)
+        pass
+
+for i in range(NUMBER_OF_RANDOM_SHAPES):
     color = COLORS[i % len(COLORS)]
     shape = SHAPES[i % len(SHAPES)]
     size = random.randint(MIN_SIZE, MAX_SIZE)
@@ -37,32 +46,6 @@ for i in range(10):
     elif shape == "T":
         pass
 
-grid_edges = cv.Canny(grid, THRESHOLD1, THRESHOLD2)
-grid_contours, _ = cv.findContours(
-    grid_edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-untouched_tile_size = max([cv.contourArea(grid_contour)
-                          for grid_contour in grid_contours])
-
-mixed_image = cv.bitwise_or(grid, image)
-mixed_image = cv.cvtColor(mixed_image, cv.COLOR_BGR2GRAY)
-cv.imshow("Image", mixed_image)
-cv.waitKey(0)
-
-edges = cv.Canny(mixed_image, THRESHOLD1, THRESHOLD2)
-cv.imshow("Image", edges)
-cv.waitKey(0)
-
-contours, _ = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-cv.drawContours(grid, contours, -1, (255, 255, 255), 1)
-cv.imshow("Image", grid)
-cv.waitKey(0)
-
-untouched = []
-for contour in contours:
-    if cv.contourArea(contour) == untouched_tile_size:  # TODO Stvorec
-        untouched.append(contour)
-
-print(len(untouched))
 cv.imshow("Image", image)
 cv.waitKey(0)
 cv.destroyAllWindows()
