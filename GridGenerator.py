@@ -3,9 +3,9 @@ import cv2 as cv
 
 
 class GridGenerator:
-    def __init__(self) -> None:
-        self.image_size = None
-        self.pieces = None
+    def __init__(self, image_size: int, pieces: int) -> None:
+        self.image_size = image_size
+        self.pieces = pieces
         self.grid = None
 
     def set_parameters(self, image_size: int, pieces: int) -> "GridGenerator":
@@ -14,17 +14,13 @@ class GridGenerator:
         return self
 
     def generate_grid(self) -> "GridGenerator":
-        if self.image_size is None or self.pieces is None:
-            raise ValueError(
-                "Parameters 'image_size' and 'pieces' must be set.")
-        else:
-            grid = np.ones(
-                (self.image_size, self.image_size, 3), dtype=np.uint8)
-            for i in range(1, self.pieces):
-                cv.line(grid, (i * self.image_size // self.pieces, 0), (i *
-                        self.image_size // self.pieces, self.image_size), (255, 255, 255), 1)
-                cv.line(grid, (0, i * self.image_size // self.pieces), (self.image_size,
-                        i * self.image_size // self.pieces), (255, 255, 255), 1)
+        grid = np.ones(
+            (self.image_size, self.image_size, 3), dtype=np.uint8)
+        for i in range(1, self.pieces):
+            cv.line(grid, (i * self.image_size // self.pieces, 0), (i *
+                    self.image_size // self.pieces, self.image_size), (255, 255, 255), 1)
+            cv.line(grid, (0, i * self.image_size // self.pieces), (self.image_size,
+                    i * self.image_size // self.pieces), (255, 255, 255), 1)
         self.grid = grid
         return self
 
@@ -39,3 +35,4 @@ class GridGenerator:
             raise ValueError("No grid generated.")
         else:
             cv.imwrite(file_name, self.grid)
+            return self
