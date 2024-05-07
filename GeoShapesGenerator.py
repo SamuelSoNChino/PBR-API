@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 as cv
 import random
+import math
 
 
 class GeoShapesGenerator:
@@ -13,10 +14,11 @@ class GeoShapesGenerator:
         self.random_max_size = int(0.25 * image_size)
         self.number_of_random_shapes = 20
         self.colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0),
-                       (255, 255, 0), (255, 255, 0), (255, 0, 255), (255, 255, 255)]
-        self.shapes = ["C"]
+                       (255, 255, 0), (255, 255, 0), (255, 0, 255)]
+        self.shapes = ["C", "S"]
         self.thickness = 5
         self.border_size = 1
+        self.border_emptiness_thresh = 0.95
 
     def set_parameters(self, image_size: int, pieces: int) -> "GeoShapesGenerator":
         self.image_size = image_size
@@ -24,13 +26,22 @@ class GeoShapesGenerator:
         return self
 
     def generate_image(self) -> "GeoShapesGenerator":
-        def draw_square() -> None:  # TODO
+        def draw_square(center: tuple[int, int], radius: int, color: tuple[int, int, int]) -> None:
+            angle = random.randint(0, 89)
+            points = []
+            for _ in range(4):
+                x_shift = int(radius * math.cos(math.radians(angle)))
+                y_shift = int(radius * math.sin(math.radians(angle)))
+                corner = [center[0] + x_shift, center[1] + y_shift]
+                points.append(corner)
+                angle += 90
+            points = np.int32([points])
+            cv.polylines(self.image, points, True, color, self.thickness)
+
+        def draw_traingle(center: tuple[int, int], radius: int, color: tuple[int, int, int]) -> None:  # TODO
             pass
 
-        def draw_traingle() -> None:  # TODO
-            pass
-
-        def generate_possible_edges(y: int, x: int) -> list[set[int]]:
+        def generate_possible_edges(y: int, x: int) -> list[tuple[int, int]]:
             edges = []
             if y != 0:  # top
                 y_pos = random.randint(
@@ -92,11 +103,11 @@ class GeoShapesGenerator:
                 else:
                     black_percentage = 1
 
-                if black_percentage > 0.97:
+                if black_percentage > 0.95:
                     color = self.colors[random.randrange(0, len(self.colors))]
                     shape = self.shapes[random.randrange(0, len(self.shapes))]
                     radius = random.randint(
-                        (int)(self.tile_size * 0.8), self.tile_size) // 2
+                        int(self.tile_size * 0.8), int(self.tile_size)) // 2
 
                     edges = generate_possible_edges(y, x)
                     edge = random.choice(edges)
@@ -104,7 +115,8 @@ class GeoShapesGenerator:
                     center = (y_pos, x_pos)
 
                     if shape == "C":
-                        cv.circle(self.image, center, radius, color, 5)
+                        cv.circle(self.image, center, radius,
+                                  color, self.thickness)
                     elif shape == "S":
                         draw_square(center, radius, color)
                     elif shape == "T":
@@ -125,4 +137,5 @@ class GeoShapesGenerator:
             return self
 
 
-GeoShapesGenerator(1000, 5).generate_image().save_image("Peter.png")
+# cv.imshow("Image", GeoShapesGenerator(1000, 5).generate_image().get_image())
+# cv.waitKey(0)
