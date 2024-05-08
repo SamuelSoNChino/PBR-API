@@ -40,26 +40,27 @@ class GeoShapesGenerator:
             points = np.int32([points])
             cv.polylines(self.image, points, True, color, self.thickness)
 
-        def generate_possible_edges(y: int, x: int) -> list[tuple[int, int]]:
+        def generate_possible_edges(y: int, x: int, next_y: int, next_x: int) -> list[tuple[int, int]]:
             edges = []
+            # Working with the approximated self.tile_size
             extra_space = int(self.extra_space_size * self.tile_size)
             if y != 0:  # top
                 y_pos = random.randint(
                     y - extra_space, y + extra_space)
-                x_pos = random.randint(x, x + self.tile_size)
+                x_pos = random.randint(x, next_x)
                 edges.append((y_pos, x_pos))
-            if y != self.tile_size * (self.pieces - 1):  # bottom
+            if next_y != self.image_size - 1:  # bottom
                 y_pos = random.randint(
                     y + self.tile_size - extra_space, y + self.tile_size + extra_space)
-                x_pos = random.randint(x, x + self.tile_size)
+                x_pos = random.randint(x, next_x)
                 edges.append((y_pos, x_pos))
             if x != 0:  # left
-                y_pos = random.randint(y, y + self.tile_size)
+                y_pos = random.randint(y, next_y)
                 x_pos = random.randint(
                     x - extra_space, x + extra_space)
                 edges.append((y_pos, x_pos))
-            if x != self.tile_size * (self.pieces - 1):  # right
-                y_pos = random.randint(y, y + self.tile_size)
+            if next_x != self.image_size - 1:  # right
+                y_pos = random.randint(y, next_y)
                 x_pos = random.randint(
                     x + self.tile_size - extra_space, x + self.tile_size + extra_space)
                 edges.append((y_pos, x_pos))
@@ -82,10 +83,21 @@ class GeoShapesGenerator:
             elif shape == "T":
                 draw_polygon(3, center, radius, color)
 
-        for y in range(0, self.image_size, self.tile_size):
-            for x in range(0, self.image_size, self.tile_size):
-                tile = self.image[y:min((y + self.tile_size), self.image_size),
-                                  x:min((x + self.tile_size), self.image_size), :]
+# The cycles go through the tiles to fill the image, so sometimes self.tile_size doesn't correspond with the real size
+# It shouldn't cause any problems, since the difference is so small, but I marked the parts of the code where problems could occur
+        for i in range(self.pieces):
+            y = (i * self.image_size) // self.pieces
+            next_y = (((i + 1) * self.image_size)) // self.pieces
+            if next_y == self.image_size:
+                next_y -= 1
+
+            for j in range(self.pieces):
+                x = (j * self.image_size) // self.pieces
+                next_x = ((j + 1) * self.image_size) // self.pieces
+                if next_x == self.image_size:
+                    next_x -= 1
+
+                tile = self.image[y:next_y, x:next_x, :]
                 tile_center = tile[self.border_size:-self.border_size,
                                    self.border_size:-self.border_size, :]
 
@@ -97,19 +109,21 @@ class GeoShapesGenerator:
                         tile_center_colored = 0
                     tile_colored = np.count_nonzero(
                         cv.cvtColor(tile, cv.COLOR_BGR2GRAY))
-                    black_percentage = 1 - \
-                        ((tile_colored - tile_center_colored) /
-                         (self.tile_size ** 2 - (self.tile_size - 2) ** 2))
+                    # Working with the approximated self.tile_size
+                    border_colored = tile_colored - tile_center_colored
+                    center_area = (self.tile_size - 2 * self.border_size) ** 2
+                    border_area = self.tile_size ** 2 - center_area
+                    black_percentage = 1 - (border_colored / border_area)
                 else:
                     black_percentage = 1
 
-                if black_percentage > 0.95:
+                if black_percentage > self.border_emptiness_thresh:
                     color = self.colors[random.randrange(0, len(self.colors))]
                     shape = self.shapes[random.randrange(0, len(self.shapes))]
                     radius = random.randint(
                         int(self.tile_size * 0.8), int(self.tile_size)) // 2
 
-                    edges = generate_possible_edges(y, x)
+                    edges = generate_possible_edges(y, x, next_y, next_x)
                     edge = random.choice(edges)
                     y_pos, x_pos = edge[1], edge[0]
                     center = (y_pos, x_pos)

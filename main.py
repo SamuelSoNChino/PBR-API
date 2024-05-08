@@ -1,12 +1,20 @@
+from flask import Flask, send_file, request
 from GeoShapesGenerator import GeoShapesGenerator
-from GridGenerator import GridGenerator
 import cv2 as cv
+import io
 
-tiles = 6
-image_size = 1000
-image = GeoShapesGenerator(image_size, tiles).generate_image().get_image()
-grid = GridGenerator(image_size, tiles).generate_grid().get_grid()
-cv.imwrite("puzzle.png", image)  # TODO test v unity
-cv.imwrite("grid.png", grid)
-cv.imshow("Image", cv.bitwise_or(grid, image))
-cv.waitKey(0)
+app = Flask(__name__)
+
+
+@app.route("/generate_image")
+def generate_image():
+    image_size = int(request.args.get("image_size"))
+    pieces = int(request.args.get("pieces"))
+    image = GeoShapesGenerator(image_size, pieces).generate_image().get_image()
+    _, image_encoded = cv.imencode("image.png", image)
+    image_bit_array = io.BytesIO(image_encoded)
+    return send_file(image_bit_array, "image/png")
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
