@@ -2,7 +2,7 @@ from GeoShapesGenerator import GeoShapesGenerator
 from GridGenerator import GridGenerator
 import cv2 as cv
 
-tiles = 10
+tiles = 6
 image_size = 1000
 image = GeoShapesGenerator(image_size, tiles).generate_image().get_image()
 grid = GridGenerator(image_size, tiles).generate_grid().get_grid()

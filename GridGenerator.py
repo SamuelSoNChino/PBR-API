@@ -16,11 +16,12 @@ class GridGenerator:
     def generate_grid(self) -> "GridGenerator":
         grid = np.ones(
             (self.image_size, self.image_size, 3), dtype=np.uint8)
-        for i in range(1, self.pieces):
-            cv.line(grid, (i * self.image_size // self.pieces, 0), (i *
-                    self.image_size // self.pieces, self.image_size), (255, 255, 255), 1)
-            cv.line(grid, (0, i * self.image_size // self.pieces), (self.image_size,
-                    i * self.image_size // self.pieces), (255, 255, 255), 1)
+        for i in range(0, self.pieces + 1):
+            pos = i * self.image_size // self.pieces
+            if pos == self.image_size:  # So that the last line is still in the image
+                pos -= 1
+            cv.line(grid, (pos, 0), (pos, self.image_size), (255, 255, 255), 1)
+            cv.line(grid, (0, pos), (self.image_size, pos), (255, 255, 255), 1)
         self.grid = grid
         return self
 
