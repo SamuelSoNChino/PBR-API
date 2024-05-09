@@ -11,15 +11,14 @@ class StainsGenerator:
         self.pieces = pieces
         self.tile_size = image_size // pieces
         self.number_of_random_strokes = 0
-        self.colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0),
-                       (255, 255, 0), (255, 255, 0), (255, 0, 255)]
+        self.colors = []
 
     def set_parameters(self, image_size: int, pieces: int) -> "StainsGenerator":
         self.image_size = image_size
         self.pieces = pieces
         return self
 
-    def generate_image(self) -> "StainsGenerator":
+    def generate_image(self) -> "StainsGenerator":  # TODO
         pass
 
     def get_image(self) -> np.ndarray:
