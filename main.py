@@ -24,7 +24,7 @@ def generate_grid():
     grid = GridGenerator(image_size, pieces).generate_circle_grid().get_grid()
     _, grid_encoded = cv.imencode("image.png", grid)
     grid_bit_array = io.BytesIO(grid_encoded)
-    return send_file(grid_bit_array, "grid/png")
+    return send_file(grid_bit_array, "image/png")
 
 
 if __name__ == '__main__':
