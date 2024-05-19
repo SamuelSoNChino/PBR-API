@@ -6,6 +6,18 @@ import io
 
 app = Flask(__name__)
 
+waiting_hosts = []
+
+
+@app.route("/request_match")
+def request_match():
+    ip_address = str(request.args.get("ip"))
+    if waiting_hosts:
+        return waiting_hosts.pop(0)
+    else:
+        waiting_hosts.append(ip_address)
+        return "OK"
+
 
 @app.route("/generate_image")
 def generate_image():
