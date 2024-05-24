@@ -16,7 +16,7 @@ def request_match():
         return waiting_hosts.pop(0)
     else:
         waiting_hosts.append(ip_address)
-        return "OK"
+        return "WAIT"
 
 
 @app.route("/generate_image")
