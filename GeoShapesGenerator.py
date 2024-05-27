@@ -5,7 +5,7 @@ import math
 
 
 class GeoShapesGenerator:
-    def __init__(self, image_size: int, pieces: int, seed: int = None) -> None:
+    def __init__(self, image_size: int, pieces: int, seed: int) -> None:
         self.image = None
         self.image_size = image_size
         self.pieces = pieces
@@ -154,5 +154,5 @@ class GeoShapesGenerator:
             return self
 
 
-# cv.imshow("Image", GeoShapesGenerator(1000, 5).generate_image().get_image())
+# cv.imshow("Image", GeoShapesGenerator(1000, 5, 1).generate_image().get_image())
 # cv.waitKey(0)

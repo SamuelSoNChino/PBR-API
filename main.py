@@ -17,7 +17,7 @@ def request_match():
         host_ip, seed = waiting_host.pop(0)
         return f'{host_ip},{seed}'
     else:
-        seed = random.randint(0, 99999)
+        seed = random.randint(1, 9999999)
         waiting_host.append((ip_address, seed))
         return f'HOST,{seed}'
 
