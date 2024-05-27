@@ -3,27 +3,32 @@ from GeoShapesGenerator import GeoShapesGenerator
 from GridGenerator import GridGenerator
 import cv2 as cv
 import io
+import random
 
 app = Flask(__name__)
 
-waiting_hosts = []
+waiting_host = []
 
 
 @app.route("/request_match")
 def request_match():
     ip_address = str(request.args.get("ip"))
-    if waiting_hosts:
-        return waiting_hosts.pop(0)
+    if waiting_host:
+        host_ip, seed = waiting_host.pop(0)
+        return f'{host_ip},{seed}'
     else:
-        waiting_hosts.append(ip_address)
-        return "WAIT"
+        seed = random.randint(0, 99999)
+        waiting_host.append((ip_address, seed))
+        return f'HOST,{seed}'
 
 
 @app.route("/generate_image")
 def generate_image():
     image_size = int(request.args.get("image_size"))
     pieces = int(request.args.get("pieces"))
-    image = GeoShapesGenerator(image_size, pieces).generate_image().get_image()
+    seed = int(request.args.get("seed"))
+    image = GeoShapesGenerator(
+        image_size, pieces, seed).generate_image().get_image()
     _, image_encoded = cv.imencode("image.png", image)
     image_bit_array = io.BytesIO(image_encoded)
     return send_file(image_bit_array, "image/png")

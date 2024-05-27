@@ -5,10 +5,11 @@ import math
 
 
 class GeoShapesGenerator:
-    def __init__(self, image_size: int, pieces: int) -> None:
+    def __init__(self, image_size: int, pieces: int, seed: int = None) -> None:
         self.image = None
         self.image_size = image_size
         self.pieces = pieces
+        self.seed = seed
         self.tile_size = image_size // pieces
         self.random_min_size = int(0.05 * image_size)
         self.random_max_size = int(0.25 * image_size)
@@ -66,6 +67,8 @@ class GeoShapesGenerator:
                 edges.append((y_pos, x_pos))
             return edges
 
+        if self.seed:
+            random.seed(self.seed)
         self.image = np.zeros(
             (self.image_size, self.image_size, 3), dtype=np.uint8)
 
