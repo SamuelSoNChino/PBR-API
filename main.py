@@ -15,11 +15,11 @@ def request_match():
     ip_address = str(request.args.get("ip"))
     if waiting_host:
         host_ip, seed = waiting_host.pop(0)
-        return f'{host_ip},{seed}'
+        return f'{seed},CLIENT,{host_ip}'
     else:
         seed = random.randint(1, 9999999)
         waiting_host.append((ip_address, seed))
-        return f'HOST,{seed}'
+        return f'{seed},HOST'
 
 
 @app.route("/generate_image")
