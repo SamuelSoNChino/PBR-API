@@ -7,19 +7,24 @@ import random
 
 app = Flask(__name__)
 
-waiting_host = []
+available_host = []
 
 
 @app.route("/request_match")
 def request_match():
-    ip_address = str(request.args.get("ip"))
-    if waiting_host:
-        host_ip, seed = waiting_host.pop(0)
-        return f'{seed},CLIENT,{host_ip}'
+    if available_host:
+        relay_join_code, seed = available_host.pop(0)
+        return f'CLIENT,{seed},{relay_join_code}'
     else:
         seed = random.randint(1, 9999999)
-        waiting_host.append((ip_address, seed))
-        return f'{seed},HOST'
+        return f'HOST,{seed}'
+
+
+@app.route("/upload_relay_join_code")
+def upload_relay_join_code():
+    relay_join_code = str(request.args.get("relay_join_code"))
+    seed = int(request.args.get("seed"))
+    available_host.append((relay_join_code, seed))
 
 
 @app.route("/generate_image")
@@ -38,7 +43,8 @@ def generate_image():
 def generate_grid():
     image_size = int(request.args.get("image_size"))
     number_of_tiles = int(request.args.get("number_of_tiles"))
-    grid = GridGenerator(image_size, number_of_tiles).generate_circle_grid().get_grid()
+    grid = GridGenerator(
+        image_size, number_of_tiles).generate_circle_grid().get_grid()
     _, grid_encoded = cv.imencode("image.png", grid)
     grid_bit_array = io.BytesIO(grid_encoded)
     return send_file(grid_bit_array, "image/png")
