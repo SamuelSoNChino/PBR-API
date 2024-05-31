@@ -25,6 +25,7 @@ def upload_relay_join_code():
     relay_join_code = str(request.args.get("relay_join_code"))
     seed = int(request.args.get("seed"))
     available_host.append((relay_join_code, seed))
+    return "OK"
 
 
 @app.route("/generate_image")
