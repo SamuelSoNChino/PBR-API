@@ -9,21 +9,19 @@ import random
 app = Flask(__name__)
 
 available_host = []
-awaited_hosts = []
 relay_code_uploaded_event = threading.Event()
+relay_code_uploaded_event.set()
 
 
 @app.route("/request_match")
 def request_match():
-    while (awaited_hosts):
-        pass
+    relay_code_uploaded_event.wait()
     if available_host:
         relay_join_code, seed = available_host.pop(0)
         return f'CLIENT,{seed},{relay_join_code}'
     else:
-        relay_code_uploaded_event.set()
+        relay_code_uploaded_event.clear()
         seed = random.randint(1, 9999999)
-        awaited_hosts.append(seed)
         return f'HOST,{seed}'
 
 
@@ -32,7 +30,7 @@ def upload_relay_join_code():
     relay_join_code = str(request.args.get("relay_join_code"))
     seed = int(request.args.get("seed"))
     available_host.append((relay_join_code, seed))
-    awaited_hosts.remove(seed)
+    relay_code_uploaded_event.set()
     return "OK"
 
 
