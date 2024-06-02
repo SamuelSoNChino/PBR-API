@@ -15,13 +15,12 @@ relay_code_uploaded_event = threading.Event()
 
 @app.route("/request_match")
 def request_match():
-    if awaited_hosts:
-        relay_code_uploaded_event.wait()
+    while (awaited_hosts):
+        pass
     if available_host:
         relay_join_code, seed = available_host.pop(0)
         return f'CLIENT,{seed},{relay_join_code}'
     else:
-        relay_code_uploaded_event = threading.Event()
         relay_code_uploaded_event.set()
         seed = random.randint(1, 9999999)
         awaited_hosts.append(seed)
@@ -32,9 +31,8 @@ def request_match():
 def upload_relay_join_code():
     relay_join_code = str(request.args.get("relay_join_code"))
     seed = int(request.args.get("seed"))
-    awaited_hosts.remove(seed)
     available_host.append((relay_join_code, seed))
-    relay_code_uploaded_event.set()
+    awaited_hosts.remove(seed)
     return "OK"
 
 
