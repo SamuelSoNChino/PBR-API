@@ -1,3 +1,4 @@
+import threading
 from flask import Flask, send_file, request
 from GeoShapesGenerator import GeoShapesGenerator
 from GridGenerator import GridGenerator
@@ -8,25 +9,33 @@ import random
 app = Flask(__name__)
 
 available_host = []
-
+awaited_hosts = []
+lock = threading.Lock()
 
 @app.route("/request_match")
 def request_match():
-    if available_host:
-        relay_join_code, seed = available_host.pop(0)
-        return f'CLIENT,{seed},{relay_join_code}'
-    else:
-        seed = random.randint(1, 9999999)
-        return f'HOST,{seed}'
+    with lock:
+        if available_host:
+            relay_join_code, seed = available_host.pop(0)
+            return f'CLIENT,{seed},{relay_join_code}'
+        else:
+            seed = random.randint(1, 9999999)
+            awaited_hosts.append(seed)
+            return f'HOST,{seed}'
 
 
 @app.route("/upload_relay_join_code")
 def upload_relay_join_code():
     relay_join_code = str(request.args.get("relay_join_code"))
     seed = int(request.args.get("seed"))
-    available_host.append((relay_join_code, seed))
-    return "OK"
 
+    with lock:
+        if seed in awaited_hosts:
+            awaited_hosts.remove(seed)
+            available_host.append((relay_join_code, seed))
+            return "OK"
+        else:
+            return "ERROR: Seed was not awaited."
 
 @app.route("/generate_image")
 def generate_image():
