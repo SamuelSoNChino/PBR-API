@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 available_host = []
 relay_code_uploaded_event = threading.Event()
+relay_code_uploaded_event.set()
 
 
 @app.route("/request_match")
