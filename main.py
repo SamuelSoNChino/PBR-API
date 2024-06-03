@@ -35,7 +35,7 @@ def upload_relay_join_code():
 @app.route("/request_new_seed")
 def request_new_seed():
     seed = random.randint(1, 9999999)
-    return seed
+    return str(seed)
 
 
 @app.route("/generate_image")
