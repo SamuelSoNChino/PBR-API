@@ -9,28 +9,26 @@ import random
 app = Flask(__name__)
 
 available_host = []
-relay_code_uploaded_event = threading.Event()
-relay_code_uploaded_event.set()
+lock = threading.Lock()
 
 
 @app.route("/request_match")
 def request_match():
-    relay_code_uploaded_event.wait()
-    if available_host:
-        relay_join_code, seed = available_host.pop(0)
-        return f'CLIENT,{seed},{relay_join_code}'
-    else:
-        relay_code_uploaded_event.clear()
-        seed = random.randint(1, 9999999)
-        return f'HOST,{seed}'
+    with lock:
+        if available_host:
+            relay_join_code, seed = available_host.pop(0)
+            return f'CLIENT,{seed},{relay_join_code}'
+        else:
+            seed = random.randint(1, 9999999)
+            return f'HOST,{seed}'
 
 
 @app.route("/upload_relay_join_code")
 def upload_relay_join_code():
     relay_join_code = str(request.args.get("relay_join_code"))
     seed = int(request.args.get("seed"))
-    available_host.append((relay_join_code, seed))
-    relay_code_uploaded_event.set()
+    with lock:
+        available_host.append((relay_join_code, seed))
     return "OK"
 
 
