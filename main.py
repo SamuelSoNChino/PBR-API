@@ -29,6 +29,14 @@ def upload_relay_join_code():
     return "OK"
 
 
+@app.route("request_join_code_removal")
+def request_join_code_removal():
+    relay_join_code = str(request.args.get("relay_join_code"))
+    seed = int(request.args.get("seed"))
+    available_host.remove((relay_join_code, seed))
+    return "OK"
+
+
 @app.route("/request_new_seed")
 def request_new_seed():
     seed = random.randint(1, 9999999)
