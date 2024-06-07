@@ -11,6 +11,11 @@ app = Flask(__name__)
 available_host = []
 
 
+@app.route("/test_connection")
+def test_connection():
+    return "OK"
+
+
 @app.route("/request_match")
 def request_match():
     if available_host:
