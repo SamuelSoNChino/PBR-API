@@ -19,8 +19,8 @@ def test_connection():
 @app.route("/request_match")
 def request_match():
     if available_host:
-        relay_join_code, seed = available_host.pop(0)
-        return f'CLIENT,{seed},{relay_join_code}'
+        relay_join_code = available_host.pop(0)
+        return f'CLIENT,{relay_join_code}'
     else:
         seed = random.randint(1, 9999999)
         return f'HOST,{seed}'
@@ -29,16 +29,14 @@ def request_match():
 @app.route("/upload_relay_join_code")
 def upload_relay_join_code():
     relay_join_code = str(request.args.get("relay_join_code"))
-    seed = int(request.args.get("seed"))
-    available_host.append((relay_join_code, seed))
+    available_host.append(relay_join_code)
     return "OK"
 
 
 @app.route("/request_join_code_removal")
 def request_join_code_removal():
     relay_join_code = str(request.args.get("relay_join_code"))
-    seed = int(request.args.get("seed"))
-    available_host.remove((relay_join_code, seed))
+    available_host.remove(relay_join_code)
     return "OK"
 
 
