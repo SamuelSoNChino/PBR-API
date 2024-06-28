@@ -22,8 +22,7 @@ def request_match():
         relay_join_code = available_host.pop(0)
         return f'CLIENT,{relay_join_code}'
     else:
-        seed = random.randint(1, 9999999)
-        return f'HOST,{seed}'
+        return f'HOST'
 
 
 @app.route("/upload_relay_join_code")
@@ -38,13 +37,6 @@ def request_join_code_removal():
     relay_join_code = str(request.args.get("relay_join_code"))
     available_host.remove(relay_join_code)
     return "OK"
-
-
-@app.route("/request_new_seed")
-def request_new_seed():
-    seed = random.randint(1, 9999999)
-    return str(seed)
-
 
 @app.route("/generate_image")
 def generate_image():
