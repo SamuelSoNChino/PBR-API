@@ -1,15 +1,13 @@
-import threading
 from flask import Flask, send_file, request
 from GeoShapesGenerator import GeoShapesGenerator
 from GridGenerator import GridGenerator
 import cv2 as cv
 import io
-import random
 
 app = Flask(__name__)
 
-available_host = []
-
+relay_join_codes = {}
+empty_spots = {}
 
 @app.route("/test_connection")
 def test_connection():
@@ -18,8 +16,14 @@ def test_connection():
 
 @app.route("/request_match")
 def request_match():
-    if available_host:
-        relay_join_code = available_host.pop(0)
+    number_of_players = str(request.args.get("number_of_players"))
+    if int(number_of_players) < 2 or int(number_of_players) > 10:
+        return "INVALID PLAYER COUNT"
+    if number_of_players in relay_join_codes.keys:
+        relay_join_code = relay_join_codes[number_of_players]
+        empty_spots[number_of_players] -= 1
+        if empty_spots[number_of_players] == 0:
+            relay_join_codes.pop(number_of_players)
         return f'CLIENT,{relay_join_code}'
     else:
         return f'HOST'
@@ -28,14 +32,18 @@ def request_match():
 @app.route("/upload_relay_join_code")
 def upload_relay_join_code():
     relay_join_code = str(request.args.get("relay_join_code"))
-    available_host.append(relay_join_code)
+    number_of_players = str(request.args.get("number_of_players"))
+    relay_join_codes[number_of_players] = relay_join_code
+    empty_spots[number_of_players] = int(number_of_players) - 1
     return "OK"
 
 
 @app.route("/request_join_code_removal")
 def request_join_code_removal():
     relay_join_code = str(request.args.get("relay_join_code"))
-    available_host.remove(relay_join_code)
+    number_of_players = relay_join_codes.keys[list(relay_join_codes.values).index(relay_join_code)]
+    relay_join_codes.pop(number_of_players)
+    empty_spots.pop(number_of_players)
     return "OK"
 
 @app.route("/generate_image")
