@@ -9,6 +9,7 @@ app = Flask(__name__)
 relay_join_codes = {}
 empty_spots = {}
 
+
 @app.route("/test_connection")
 def test_connection():
     return "OK"
@@ -19,7 +20,7 @@ def request_match():
     number_of_players = str(request.args.get("number_of_players"))
     if int(number_of_players) < 2 or int(number_of_players) > 10:
         return "INVALID PLAYER COUNT"
-    if number_of_players in relay_join_codes.keys:
+    if number_of_players in relay_join_codes.keys():
         relay_join_code = relay_join_codes[number_of_players]
         empty_spots[number_of_players] -= 1
         if empty_spots[number_of_players] == 0:
@@ -41,10 +42,12 @@ def upload_relay_join_code():
 @app.route("/request_join_code_removal")
 def request_join_code_removal():
     relay_join_code = str(request.args.get("relay_join_code"))
-    number_of_players = relay_join_codes.keys[list(relay_join_codes.values).index(relay_join_code)]
+    number_of_players = relay_join_codes.keys()[list(
+        relay_join_codes.values()).index(relay_join_code)]
     relay_join_codes.pop(number_of_players)
     empty_spots.pop(number_of_players)
     return "OK"
+
 
 @app.route("/generate_image")
 def generate_image():
