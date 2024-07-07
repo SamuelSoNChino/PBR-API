@@ -41,9 +41,7 @@ def upload_relay_join_code():
 
 @app.route("/request_join_code_removal")
 def request_join_code_removal():
-    relay_join_code = str(request.args.get("relay_join_code"))
-    number_of_players = relay_join_codes.keys()[list(
-        relay_join_codes.values()).index(relay_join_code)]
+    number_of_players = str(request.args.get("number_of_players"))
     relay_join_codes.pop(number_of_players)
     empty_spots.pop(number_of_players)
     return "OK"
