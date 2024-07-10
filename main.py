@@ -18,7 +18,7 @@ def test_connection():
 @app.route("/request_match")
 def request_match():
     number_of_players = str(request.args.get("number_of_players"))
-    if int(number_of_players) < 1 or int(number_of_players) > 10:
+    if int(number_of_players) < 2 or int(number_of_players) > 10:
         return "INVALID PLAYER COUNT"
     if number_of_players in relay_join_codes.keys():
         relay_join_code = relay_join_codes[number_of_players]
