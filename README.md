@@ -2,6 +2,8 @@
 
 This repository contains the server-side API for the Puzzle Battle Royale (PBR) game. The API is built using Flask and is responsible for matchmaking, as well as generating unique puzzle images and grids for the game. The API integrates with Unity Relay for matchmaking and ensures that each puzzle is solvable yet unique for every game match.
 
+The API is currently deployed and accessible at:
+https://samuelsonchino.eu.pythonanywhere.com
 
 ## Features
 
