@@ -1,9 +1,7 @@
-# PBR API (Puzzle Battle Royale)
+# PBR-API (Puzzle Battle Royale)
 
-This repository contains the server-side API for the Puzzle Battle Royale (PBR) game. The API is built using Flask and is responsible for matchmaking, as well as generating unique puzzle images and grids for the game. The API integrates with Unity Relay for matchmaking and ensures that each puzzle is solvable yet unique for every game match.
+This repository contains the server-side API for the [Puzzle Battle Royale (PBR)](https://github.com/SamuelSoNChino/PBR) game. The API is built using Flask and is responsible for matchmaking, as well as generating unique puzzle images and grids for the game. The API integrates with Unity Relay for matchmaking and ensures that each puzzle is solvable yet unique for every game match.
 
-The API is currently deployed and accessible at:
-https://samuelsonchino.eu.pythonanywhere.com
 
 ## Features
 
@@ -97,25 +95,33 @@ or
     ├── GridGenerator.py         # Generates grids for the puzzles
     └── requirements.txt         # Python dependencies (optional)
 
-Code Overview
-1. GeoShapesGenerator.py
+## Code Overview
 
-    Purpose: Creates a puzzle image with unique geometric shapes.
-    Key Features:
-        Supports circles, squares, and triangles.
-        Ensures shapes are distributed across tiles.
-        Uses seed values for reproducible results.
+The API backend consists of three main files:
 
-2. GridGenerator.py
+### 1. `main.py`
+- **Purpose**: Serves as the entry point for the Flask application. It defines the API endpoints responsible for matchmaking and puzzle generation.
+- **Technologies Used**:
+    - **Flask**: Lightweight web framework for handling HTTP requests.
+    - **OpenCV**: Used for encoding images into byte arrays before serving them.
+    - **Unity Relay Integration**: Facilitates matchmaking by storing and managing player join codes.
 
-    Purpose: Generates a grid overlay for the puzzle image.
-    Key Features:
-        Supports customizable grid sizes.
-        Options for grid lines and circular overlays.
+### 2. `GridGenerator.py`
+- **Purpose**: Generates grid overlays for puzzle boards with configurable sizes and styles (lines or circles).
+- **Technologies** Used:
+    - **NumPy**: Creates and manipulates numerical arrays for the grid's structure.
+    - **OpenCV**: Renders the grid as an image with customizable colors, dimensions, and shapes.
+- **Key Features**:
+    - Configurable grid size and tile count.
+    - Supports line-based and circle-based grid styles.
 
-3. main.py
-
-    Purpose: Flask application managing API endpoints.
-    Key Features:
-        Matchmaking logic with Unity Relay integration.
-        Image generation endpoints for puzzles and grids.
+### `GeoShapesGenerator.py`
+- **Purpose**: Dynamically creates unique puzzle images consisting of geometric shapes, ensuring solvability and randomness.
+- **Technologies Used**:
+    - **OpenCV**: Draws shapes like circles, squares, and triangles on the puzzle image.
+    - **NumPy**: Structures the puzzle’s layout and ensures it adheres to specific constraints.
+    - **Random Module**: Adds variability to shape placement, size, and color.
+- **Key Features**:
+    - Adjustable puzzle size and complexity based on the number of tiles.
+    - Supports multiple shapes and colors to ensure visual diversity.
+    - Ensures tiles are solvable and avoids excessive overlap.
