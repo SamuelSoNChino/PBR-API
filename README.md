@@ -115,7 +115,7 @@ The API backend consists of three main files:
     - Configurable grid size and tile count.
     - Supports line-based and circle-based grid styles.
 
-### `GeoShapesGenerator.py`
+### 3. `GeoShapesGenerator.py`
 - **Purpose**: Dynamically creates unique puzzle images consisting of geometric shapes, ensuring solvability and randomness.
 - **Technologies Used**:
     - **OpenCV**: Draws shapes like circles, squares, and triangles on the puzzle image.
