@@ -78,7 +78,7 @@ or
 - **Description**: Generates a unique puzzle image based on geometric shapes.
 - **Example 1**: Puzzle image generated with `image_size=1000`, `number_of_tiles=6` and `seed=9`
 ![1000x1000, 6x6 Puzzle Image](/assets/image_showcase1.png)
-- **Example 2**: Same puzzle image with the grid lines overlay to showcase solvability (Every tile is sharing at least one shape with another tile)
+- **Example 2**: Same puzzle image with the grid lines overlay to showcase solvability (Each tile is sharing a geometrical shape with at least one other tile)
 ![1000x1000, 6x6 Puzzle Image with Grid Lines](/assets/image_showcase2.png)
 
 ### 6. Generate Grid
